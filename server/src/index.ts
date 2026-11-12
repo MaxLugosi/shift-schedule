@@ -28,7 +28,6 @@ if (fs.existsSync(path.join(CLIENT_DIST, 'index.html'))) {
 }
 
 const port = Number(process.env.PORT ?? 8787);
-// на alwaysdata IP и PORT приходят из окружения
 const hostname = process.env.IP ?? process.env.HOST ?? '0.0.0.0';
 const server = serve({ fetch: app.fetch, port, hostname }, (info) => {
   console.log(`Server: http://localhost:${info.port} (db: ${handle.kind})`);

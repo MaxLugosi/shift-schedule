@@ -65,19 +65,12 @@ npm run typecheck
 
 На одного сотрудника в день хранится одна смена. `templateId: null` означает свою смену.
 
-## Деплой на alwaysdata
+## Продакшен
 
-1. В панели создать базу PostgreSQL (Databases → PostgreSQL) и в Environment выбрать Node.js 22.
-2. Зайти по ssh и собрать проект:
-   ```bash
-   ssh <account>@ssh-<account>.alwaysdata.net
-   git clone https://github.com/<user>/<repo>.git shift-schedule
-   cd shift-schedule
-   npm ci
-   npm run build
-   ```
-3. Web → Sites → добавить сайт типа Node.js:
-   - command: `node server/dist/index.js`
-   - working directory: `shift-schedule`
-   - environment: `DATABASE_URL=postgresql://<user>:<password>@postgresql-<account>.alwaysdata.net:5432/<db>`
-4. Перезапустить сайт. Порт alwaysdata передаёт сам, таблицы и данные создадутся при первом запуске.
+```bash
+npm ci
+npm run build
+DATABASE_URL=postgresql://user:password@host:5432/db PORT=8080 node server/dist/index.js
+```
+
+Сервер сам применяет миграции при старте и отдаёт собранный фронт вместе с API.
