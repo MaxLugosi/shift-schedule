@@ -11,10 +11,22 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U shifts -d shifts"]
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U shifts -d shifts"]
       interval: 3s
       timeout: 3s
       retries: 20
+
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://shifts:shifts@db:5432/shifts
+      PORT: 8787
+    ports:
+      - "8787:8787"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   pgdata:
