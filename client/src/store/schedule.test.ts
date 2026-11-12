@@ -25,6 +25,7 @@ beforeEach(() => {
     drafts: {},
     history: [],
     selected: {},
+    autosave: false,
   });
 });
 
@@ -60,6 +61,25 @@ describe('schedule store', () => {
     st().move(k1, k2, true);
     expect(effectiveShift(st(), k1)).not.toBeNull();
     expect(effectiveShift(st(), k2)).not.toBeNull();
+  });
+
+  it('moving onto an occupied cell swaps the shifts', () => {
+    st().assign([k1], morning);
+    st().move(k1, k3);
+    expect(effectiveShift(st(), k3)).toEqual(morning);
+    expect(effectiveShift(st(), k1)).toMatchObject({ startTime: '10:00', endTime: '18:00' });
+  });
+
+  it('undo still works after the changes were saved', () => {
+    st().assign([k1], morning);
+    // как будто автосохранение уже записало смену на сервер
+    useSchedule.setState({
+      server: { ...st().server, [k1]: { ...serverShift, id: 11, employeeId: 1, date: '2026-07-01', ...morning } },
+      drafts: {},
+    });
+    st().undo();
+    expect(effectiveShift(st(), k1)).toBeNull();
+    expect(pendingChanges(st()).deletes).toEqual([{ employeeId: 1, date: '2026-07-01' }]);
   });
 
   it('undoes the last change', () => {

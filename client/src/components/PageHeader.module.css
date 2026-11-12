@@ -75,6 +75,44 @@
   min-height: 48px;
 }
 
+.titleBox {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  min-width: 0;
+}
+
+.status {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--c-text-muted);
+}
+
+.ok {
+  color: var(--c-text-muted);
+}
+
+.warn {
+  color: #b45309;
+}
+
+.error {
+  color: var(--c-danger);
+}
+
+.retry {
+  color: var(--c-brand-text);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
 .title {
   margin: 0;
   font-size: 32px;

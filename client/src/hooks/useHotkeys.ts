@@ -48,11 +48,17 @@ export function useHotkeys() {
       }
     };
 
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') void useSchedule.getState().save({ silent: true });
+    };
+
     window.addEventListener('keydown', onKey);
     window.addEventListener('beforeunload', onBeforeUnload);
+    document.addEventListener('visibilitychange', onHide);
     return () => {
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('beforeunload', onBeforeUnload);
+      document.removeEventListener('visibilitychange', onHide);
     };
   }, []);
 }

@@ -18,6 +18,8 @@ export interface ShiftValue {
 }
 
 type Drafts = Record<CellKey, ShiftValue | null>;
+// для отмены храним прежние значения изменённых ячеек, так undo работает и после сохранения
+type UndoPatch = Record<CellKey, ShiftValue | null>;
 
 interface Toast {
   id: number;
@@ -35,12 +37,14 @@ interface ScheduleState {
   server: Record<CellKey, Shift>;
   // несохранённые изменения поверх server, null = удалено
   drafts: Drafts;
-  history: Drafts[];
+  history: UndoPatch[];
   selected: Record<CellKey, true>;
 
   ready: boolean;
   loadingShifts: boolean;
   saving: boolean;
+  saveError: string | null;
+  autosave: boolean;
   publishing: boolean;
   loadError: string | null;
   toast: Toast | null;
@@ -63,13 +67,16 @@ interface ScheduleState {
   deselect: (keys: CellKey[]) => void;
   clearSelection: () => void;
 
-  save: () => Promise<boolean>;
+  save: (opts?: { silent?: boolean }) => Promise<boolean>;
   publish: () => Promise<void>;
   showToast: (text: string, kind?: Toast['kind']) => void;
   dismissToast: () => void;
 }
 
 const MAX_HISTORY = 50;
+const AUTOSAVE_DELAY = 1000;
+let autosaveTimer: ReturnType<typeof setTimeout> | undefined;
+let saveAgain = false;
 let toastSeq = 0;
 let shiftsRequestSeq = 0;
 let employeesRequestSeq = 0;
@@ -96,18 +103,37 @@ export function pendingChanges(state: Pick<ScheduleState, 'server' | 'drafts'>):
   return { upserts, deletes };
 }
 
+const serverValue = (s: Shift | undefined): ShiftValue | null =>
+  s ? { startTime: s.startTime, endTime: s.endTime, templateId: s.templateId } : null;
+
 export const useSchedule = create<ScheduleState>()((set, get) => {
-  const commit = (mutate: (drafts: Drafts) => void) => {
-    const prev = get().drafts;
-    const next = { ...prev };
-    mutate(next);
-    // если вернули как было на сервере - это уже не изменение
-    for (const key of Object.keys(next)) {
-      const srv = get().server[key];
-      const srvValue = srv ? { startTime: srv.startTime, endTime: srv.endTime, templateId: srv.templateId } : null;
-      if (sameValue(next[key], srvValue)) delete next[key];
+  const scheduleSave = () => {
+    if (!get().autosave) return;
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => void get().save({ silent: true }), AUTOSAVE_DELAY);
+  };
+
+  // если вернули как было на сервере - это уже не изменение
+  const normalize = (drafts: Drafts) => {
+    const server = get().server;
+    for (const key of Object.keys(drafts)) {
+      if (sameValue(drafts[key], serverValue(server[key]))) delete drafts[key];
     }
-    set({ drafts: next, history: [...get().history, prev].slice(-MAX_HISTORY) });
+    return drafts;
+  };
+
+  const commit = (mutate: (drafts: Drafts) => void) => {
+    const st = get();
+    const next = { ...st.drafts };
+    mutate(next);
+    const patch: UndoPatch = {};
+    for (const key of Object.keys(next)) {
+      const before = effectiveShift(st, key);
+      if (!sameValue(before, next[key])) patch[key] = before;
+    }
+    if (!Object.keys(patch).length) return;
+    set({ drafts: normalize(next), history: [...st.history, patch].slice(-MAX_HISTORY) });
+    scheduleSave();
   };
 
   return {
@@ -125,6 +151,8 @@ export const useSchedule = create<ScheduleState>()((set, get) => {
     ready: false,
     loadingShifts: false,
     saving: false,
+    saveError: null,
+    autosave: true,
     publishing: false,
     loadError: null,
     toast: null,
@@ -209,13 +237,15 @@ export const useSchedule = create<ScheduleState>()((set, get) => {
         for (const k of withShift) d[k] = null;
       });
     },
+    // перенос на занятую ячейку меняет смены местами, копия (Ctrl) заменяет
     move(from, to, copy = false) {
       if (from === to) return;
       const value = effectiveShift(get(), from);
       if (!value) return;
+      const target = effectiveShift(get(), to);
       commit((d) => {
         d[to] = { ...value };
-        if (!copy) d[from] = null;
+        if (!copy) d[from] = target ? { ...target } : null;
       });
       if (get().selected[from] && !copy) {
         const selected = { ...get().selected };
@@ -226,8 +256,10 @@ export const useSchedule = create<ScheduleState>()((set, get) => {
     },
     undo() {
       const history = get().history;
-      if (!history.length) return;
-      set({ drafts: history[history.length - 1]!, history: history.slice(0, -1) });
+      const patch = history[history.length - 1];
+      if (!patch) return;
+      set({ drafts: normalize({ ...get().drafts, ...patch }), history: history.slice(0, -1) });
+      scheduleSave();
     },
 
     select(keys, mode = 'add') {
@@ -247,27 +279,48 @@ export const useSchedule = create<ScheduleState>()((set, get) => {
       if (Object.keys(get().selected).length) set({ selected: {} });
     },
 
-    async save() {
+    async save({ silent = false } = {}) {
+      clearTimeout(autosaveTimer);
+      if (get().saving) {
+        saveAgain = true;
+        return true;
+      }
+      const sent = { ...get().drafts };
       const changes = pendingChanges(get());
-      if (!changes.upserts.length && !changes.deletes.length) return true;
+      if (!changes.upserts.length && !changes.deletes.length) {
+        if (!silent) get().showToast('Все изменения уже сохранены');
+        return true;
+      }
       set({ saving: true });
       try {
         const res = await api.saveBatch(changes);
         const server = { ...get().server };
         for (const c of changes.deletes) delete server[cellKey(c.employeeId, c.date)];
         for (const s of res.upserted) server[cellKey(s.employeeId, s.date)] = s;
-        set({ server, drafts: {}, history: [], saving: false });
-        get().showToast('Изменения сохранены', 'success');
+        // правки, сделанные пока шёл запрос, не трогаем
+        const drafts = { ...get().drafts };
+        for (const [key, value] of Object.entries(sent)) {
+          if (key in drafts && sameValue(drafts[key], value)) delete drafts[key];
+        }
+        set({ server, drafts, saving: false, saveError: null });
+        if (!silent) get().showToast('Изменения сохранены', 'success');
+        const more = pendingChanges(get());
+        if (saveAgain || more.upserts.length || more.deletes.length) {
+          saveAgain = false;
+          scheduleSave();
+        }
         return true;
       } catch (e) {
-        set({ saving: false });
-        get().showToast((e as Error).message, 'error');
+        saveAgain = false;
+        const message = (e as Error).message;
+        set({ saving: false, saveError: message });
+        get().showToast(`Не удалось сохранить: ${message}`, 'error');
         return false;
       }
     },
 
     async publish() {
-      if (!(await get().save())) return;
+      if (!(await get().save({ silent: true }))) return;
       const { from, to } = getRange(get().view, get().anchor);
       set({ publishing: true });
       try {

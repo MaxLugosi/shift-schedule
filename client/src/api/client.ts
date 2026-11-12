@@ -33,7 +33,11 @@ export const api = {
   templates: () => request<ShiftTemplate[]>('/templates'),
   shifts: (from: string, to: string) => request<Shift[]>(`/shifts?from=${from}&to=${to}`),
   saveBatch: (batch: BatchRequest) =>
-    request<{ upserted: Shift[]; deleted: number }>('/shifts/batch', { method: 'PUT', body: JSON.stringify(batch) }),
+    request<{ upserted: Shift[]; deleted: number }>('/shifts/batch', {
+      method: 'PUT',
+      body: JSON.stringify(batch),
+      keepalive: true, // чтобы запрос ушёл, даже если вкладку закрывают
+    }),
   publish: (from: string, to: string) =>
     request<{ published: number; publishedAt: string }>('/schedule/publish', {
       method: 'POST',
