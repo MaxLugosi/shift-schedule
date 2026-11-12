@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { addMonths, eachDay, getRange, rangeLabel, startOfWeek } from './dates';
 import { cellsWord, employeesWord } from './plural';
-import { compactRange, durationMinutes, formatHours, normalizeTimeInput } from './time';
+import { compactRange, durationMinutes, formatHours, maskTimeInput, normalizeTimeInput } from './time';
 
 describe('dates', () => {
   it('weeks start on Monday', () => {
@@ -38,6 +38,20 @@ describe('time', () => {
   it('formats compact chip ranges', () => {
     expect(compactRange('08:00', '18:00')).toBe('08 - 18');
     expect(compactRange('08:30', '18:00')).toBe('08:30 - 18');
+  });
+
+  it('masks time input while typing', () => {
+    expect(maskTimeInput('0')).toBe('0');
+    expect(maskTimeInput('08')).toBe('08:');
+    expect(maskTimeInput('0805')).toBe('08:05');
+    expect(maskTimeInput('08055')).toBe('08:05');
+    expect(maskTimeInput('9')).toBe('09:');
+    expect(maskTimeInput('25')).toBe('2');
+    expect(maskTimeInput('23:7')).toBe('23:');
+    expect(maskTimeInput('abc1x2')).toBe('12:');
+    expect(maskTimeInput('9:30')).toBe('09:30');
+    expect(maskTimeInput('08', true)).toBe('08');
+    expect(maskTimeInput('')).toBe('');
   });
 
   it('normalizes typed time', () => {

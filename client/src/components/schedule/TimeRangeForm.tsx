@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { normalizeTimeInput } from '../../lib/time';
+import { maskTimeInput, normalizeTimeInput } from '../../lib/time';
 import { Icon } from '../icons';
 import { Button } from '../ui/Button';
 import { TextField } from '../ui/controls';
@@ -62,7 +62,7 @@ export function TimeRangeForm({
           value={start}
           error={errors.start}
           onChange={(e) => {
-            setStart(e.target.value);
+            setStart(maskTimeInput(e.target.value, e.target.value.length < start.length));
             setErrors((x) => ({ ...x, start: undefined }));
           }}
           onBlur={(e) => blurNormalize(e.target.value, setStart)}
@@ -76,7 +76,7 @@ export function TimeRangeForm({
           value={end}
           error={errors.end}
           onChange={(e) => {
-            setEnd(e.target.value);
+            setEnd(maskTimeInput(e.target.value, e.target.value.length < end.length));
             setErrors((x) => ({ ...x, end: undefined }));
           }}
           onBlur={(e) => blurNormalize(e.target.value, setEnd)}

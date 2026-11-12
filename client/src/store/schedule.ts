@@ -168,22 +168,24 @@ export const useSchedule = create<ScheduleState>()((set, get) => {
       }
     },
 
+    // при смене периода или поиска выделение сбрасываем,
+    // иначе действия попадут в ячейки, которых не видно
     setView(view) {
       if (view === get().view) return;
-      set({ view });
+      set({ view, selected: {} });
       void get().loadShifts();
     },
     navigate(dir) {
       const { view, anchor } = get();
-      set({ anchor: view === 'week' ? addDays(anchor, dir * 7) : addMonths(anchor, dir) });
+      set({ anchor: view === 'week' ? addDays(anchor, dir * 7) : addMonths(anchor, dir), selected: {} });
       void get().loadShifts();
     },
     goTo(anchor) {
-      set({ anchor });
+      set({ anchor, selected: {} });
       void get().loadShifts();
     },
     setSearch(search) {
-      set({ search });
+      set({ search, selected: {} });
       void get().loadEmployees();
     },
 

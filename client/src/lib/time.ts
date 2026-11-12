@@ -26,6 +26,22 @@ export function compactRange(start: string, end: string): string {
   return `${short(start)} - ${short(end)}`;
 }
 
+// маска для поля времени: только цифры, двоеточие ставится само,
+// часы не больше 23, минуты не больше 59
+export function maskTimeInput(raw: string, deleting = false): string {
+  let d = raw.replace(/\D/g, '');
+  if (!d) return '';
+  if (d[0]! > '2') d = `0${d}`;
+  let out = d[0]!;
+  if (d.length === 1) return out;
+  if (d[0] === '2' && d[1]! > '3') return out;
+  out += d[1];
+  const rest = d.slice(2);
+  if (!rest) return deleting ? out : `${out}:`;
+  if (rest[0]! > '5') return `${out}:`;
+  return `${out}:${rest.slice(0, 2)}`;
+}
+
 // "9" -> 09:00, "930" -> 09:30, "9:5" -> 09:05
 export function normalizeTimeInput(raw: string): string | null {
   const v = raw.trim().replace(/[.,\-\s]/g, ':');
