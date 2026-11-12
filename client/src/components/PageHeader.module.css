@@ -1,0 +1,126 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--c-text);
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.round {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 99px;
+  background: var(--c-surface);
+  color: var(--c-text);
+  transition: background-color 0.12s;
+}
+
+.back:hover .round,
+.round:hover {
+  background: var(--c-field-hover);
+}
+
+.burger {
+  display: none;
+}
+
+.burgerIcon,
+.burgerIcon::before,
+.burgerIcon::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  position: relative;
+}
+
+.burgerIcon::before,
+.burgerIcon::after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+
+.burgerIcon::before {
+  top: -6px;
+}
+
+.burgerIcon::after {
+  top: 6px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 48px;
+}
+
+.title {
+  margin: 0;
+  font-size: 32px;
+  line-height: 32px;
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+}
+
+@media (max-width: 1023px) {
+  .burger {
+    display: grid;
+  }
+}
+
+@media (max-width: 639px) {
+  .header {
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 26px;
+    line-height: 32px;
+  }
+
+  .actions :global(button) {
+    height: 40px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 419px) {
+  .titleRow {
+    flex-wrap: wrap;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .actions :global(button) {
+    flex: 1;
+  }
+}

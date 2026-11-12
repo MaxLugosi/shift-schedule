@@ -1,0 +1,114 @@
+:root {
+  --font: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  --c-page: #f2f3f7;
+  --c-surface: #ffffff;
+  --c-surface-alt: #f8f8f9;
+  --c-field: #f2f3f7;
+  --c-field-hover: #e7e8ee;
+  --c-border: #dedee3;
+  --c-border-strong: #bcbcc2;
+  --c-text: #101012;
+  --c-text-black: #000000;
+  --c-text-muted: #737378;
+  --c-icon-muted: #93939c;
+  --c-dark: #3c3c43;
+  --c-dark-2: #595961;
+
+  --c-brand: #5b7dec;
+  --c-brand-hover: #4a6ddf;
+  --c-brand-text: #1c4ae5;
+  --c-brand-soft: #e8edfc;
+  --c-brand-soft-hover: #dbe3fb;
+  --c-selected: #ebeffd;
+
+  --c-danger: #dc2626;
+  --c-danger-soft: #fbe5e5;
+
+  --c-cornflower-bg: #e8edfc;
+  --c-cornflower-border: #bbc9f7;
+  --c-cornflower-text: #5b7dec;
+  --c-lavender-bg: #e9deff;
+  --c-lavender-border: #c8adff;
+  --c-lavender-text: #8040ff;
+  --c-mint-bg: #e0f8f7;
+  --c-mint-border: #b2eeeb;
+  --c-mint-text: #00a19a;
+  --c-custom-bg: #5b7dec;
+  --c-custom-text: #ffffff;
+
+  --r-page: 20px;
+  --r-panel: 12px;
+  --r-control: 8px;
+
+  --sidebar-w: 280px;
+  --sidebar-w-collapsed: 72px;
+  --cell-w-week: 110px;
+  --cell-w-month: 64px;
+  --row-h: 72px;
+  --employee-w: 220px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--c-text);
+  background: var(--c-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'lnum' 1;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  background: none;
+  padding: 0;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 2px solid var(--c-brand);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+body.is-dragging,
+body.is-dragging * {
+  cursor: grabbing !important;
+  user-select: none;
+}

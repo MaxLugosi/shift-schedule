@@ -1,0 +1,45 @@
+.toolbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px 16px;
+  min-height: 48px;
+  flex-wrap: wrap;
+}
+
+.search {
+  flex: 1 1 180px;
+  max-width: 398px;
+  min-width: 180px;
+}
+
+@media (max-width: 767px) {
+  .toolbar {
+    gap: 8px;
+  }
+
+  .search {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}
+
+@media (max-width: 479px) {
+  .toolbar > :nth-child(2) {
+    flex: 1;
+  }
+
+  .toolbar > :nth-child(2) > :nth-child(2) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .toolbar > :nth-child(3) {
+    width: 100%;
+  }
+
+  .toolbar > :nth-child(3) > button {
+    flex: 1;
+    min-width: 0;
+  }
+}

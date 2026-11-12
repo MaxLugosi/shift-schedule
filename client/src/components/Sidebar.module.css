@@ -1,0 +1,215 @@
+.sidebar {
+  position: sticky;
+  top: 0;
+  flex: none;
+  width: var(--sidebar-w);
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 16px 16px 14px;
+  background: var(--c-page);
+  border-right: 1px solid var(--c-border);
+  transition: width 0.2s ease;
+  overflow: hidden;
+  z-index: 30;
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+}
+
+.brand {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 600;
+  color: var(--c-text-black);
+  white-space: nowrap;
+}
+
+.iconButton {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-control);
+  color: var(--c-text);
+  background: var(--c-field);
+  flex: none;
+}
+
+.iconButton:hover {
+  background: var(--c-field-hover);
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 40px;
+  padding: 8px;
+  border-radius: var(--r-control);
+  color: var(--c-text);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  text-align: left;
+  width: 100%;
+}
+
+.item svg {
+  flex: none;
+}
+
+.item:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.itemActive,
+.itemActive:hover {
+  background: var(--c-surface);
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.collapsed {
+  width: var(--sidebar-w-collapsed);
+}
+
+.collapsed .brand,
+.collapsed .label {
+  display: none;
+}
+
+.collapsed .brandRow {
+  justify-content: center;
+}
+
+.collapsed .brandRow .iconButton {
+  display: none;
+}
+
+.collapsed .brandRow::before {
+  content: 'C';
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.collapsed .item {
+  justify-content: center;
+}
+
+.backdrop {
+  display: none;
+}
+
+/* на небольших экранах меню всегда свёрнуто */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .sidebar {
+    width: var(--sidebar-w-collapsed);
+  }
+
+  .brand,
+  .label,
+  .brandRow .iconButton {
+    display: none;
+  }
+
+  .brandRow {
+    justify-content: center;
+  }
+
+  .brandRow::before {
+    content: 'C';
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .item {
+    justify-content: center;
+  }
+
+  .collapseBtn {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: var(--sidebar-w);
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    box-shadow: 0 8px 32px rgba(16, 16, 18, 0.16);
+  }
+
+  .collapsed {
+    width: var(--sidebar-w);
+  }
+
+  .collapsed .brand,
+  .collapsed .label {
+    display: inline;
+  }
+
+  .collapsed .brandRow {
+    justify-content: space-between;
+  }
+
+  .collapsed .brandRow .iconButton {
+    display: grid;
+  }
+
+  .collapsed .brandRow::before {
+    content: none;
+  }
+
+  .collapsed .item {
+    justify-content: flex-start;
+  }
+
+  .collapseBtn {
+    display: none;
+  }
+
+  .mobileOpen {
+    transform: none;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 16, 18, 0.32);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 29;
+  }
+
+  .backdropVisible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

@@ -1,0 +1,19 @@
+.popover {
+  position: fixed;
+  z-index: 50;
+  padding: 8px;
+  border-radius: var(--r-panel);
+  background: var(--c-surface);
+  box-shadow:
+    0 0 0 1px rgba(16, 16, 18, 0.06),
+    0 3px 5px rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.12);
+  animation: pop 0.12s ease-out;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}

@@ -1,0 +1,298 @@
+.scroller {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-border) transparent;
+}
+
+.grid {
+  display: grid;
+  min-width: 100%;
+  width: max-content;
+  isolation: isolate;
+}
+
+.weekView {
+  width: auto;
+}
+
+.row {
+  display: contents;
+}
+
+.placeholder,
+.empty {
+  padding: 32px 12px;
+  color: var(--c-text-muted);
+  text-align: center;
+}
+
+.head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+  color: var(--c-text-muted);
+}
+
+.corner {
+  left: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  height: 48px;
+}
+
+.monthView .corner {
+  height: 54px;
+}
+
+.dateHead {
+  display: flex;
+}
+
+.dateBtn {
+  flex: 1;
+  height: 48px;
+  padding: 12px 4px;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+  border-radius: 8px 8px 0 0;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.dateBtn:hover {
+  background: var(--c-field);
+  color: var(--c-text);
+}
+
+.monthView .dateBtn {
+  height: 54px;
+  padding: 8px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.monthView .wd {
+  color: var(--c-text-muted);
+}
+
+.monthView .dn {
+  margin-top: -2px;
+  color: var(--c-text);
+}
+
+.today,
+.today .wd,
+.today .dn {
+  color: var(--c-brand-text);
+  font-weight: 600;
+}
+
+.employee,
+.cell {
+  background: var(--c-surface);
+  height: var(--row-h);
+}
+
+.odd > .employee,
+.odd > .cell {
+  background: var(--c-surface-alt);
+}
+
+.row:hover > .employee,
+.row:hover > .cell {
+  box-shadow: inset 0 1px 0 var(--c-border), inset 0 -1px 0 var(--c-border);
+}
+
+.employee {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 12px 8px;
+  min-width: 0;
+}
+
+.avatar {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: #e7e8ee;
+  box-shadow: 0 0 0 0.5px rgba(242, 243, 247, 0.5);
+}
+
+.initials {
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.who {
+  min-width: 0;
+  flex: 1;
+}
+
+.name {
+  color: var(--c-text-black);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  display: flex;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+}
+
+.cell {
+  position: relative;
+  display: flex;
+  padding: 4px;
+  outline: none;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.cell:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--c-brand);
+}
+
+.slot {
+  flex: 1;
+  border: 1px dashed var(--c-border);
+  border-radius: 8px;
+  transition: border-color 0.12s, background-color 0.12s;
+}
+
+.cell:hover .slot {
+  border-color: var(--c-border-strong);
+  background: rgba(91, 125, 236, 0.04);
+}
+
+.selected,
+.odd > .selected {
+  background: var(--c-selected);
+  box-shadow: inset 0 0 0 1px var(--c-brand);
+}
+
+.row:hover > .selected {
+  box-shadow: inset 0 0 0 1px var(--c-brand);
+}
+
+.plus {
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 99px;
+  background: var(--c-brand);
+  color: #fff;
+  transition: transform 0.12s;
+}
+
+.plus:hover {
+  transform: scale(1.15);
+}
+
+.chipWrap {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  cursor: grab;
+  touch-action: none;
+  border-radius: 8px;
+}
+
+.selected .chipWrap {
+  box-shadow: 0 0 0 1px #fff;
+}
+
+.dragging {
+  opacity: 0.35;
+}
+
+.drop,
+.odd > .drop {
+  background: var(--c-selected);
+  box-shadow: inset 0 0 0 2px var(--c-brand);
+}
+
+.drop .slot {
+  border-color: var(--c-brand);
+}
+
+/* покрытие */
+.footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid var(--c-border);
+  background: var(--c-surface);
+}
+
+.footerTitle {
+  left: 0;
+  z-index: 3;
+  color: var(--c-text-muted);
+}
+
+.coverage {
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.uncovered {
+  background: var(--c-danger-soft);
+  color: var(--c-danger);
+}
+
+.covered {
+  background: var(--c-selected);
+  color: var(--c-brand-text);
+}
+
+@media (max-width: 639px) {
+  .grid {
+    --employee-w: 148px;
+    --cell-w-week: 80px;
+  }
+
+  .employee {
+    padding: 8px 6px;
+    gap: 6px;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .name {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}

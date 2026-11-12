@@ -1,0 +1,126 @@
+.page {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--c-page);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 30px 24px 30px;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 335px;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.card {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 12px;
+  border-radius: var(--r-page);
+  background: var(--c-surface);
+  overflow: hidden;
+  align-self: start;
+  max-height: 100%;
+}
+
+.body > aside {
+  align-self: start;
+}
+
+.error {
+  padding: 24px;
+  border-radius: var(--r-page);
+  background: var(--c-surface);
+  color: var(--c-danger);
+}
+
+.retry {
+  margin-top: 8px;
+  padding: 8px 16px;
+  border-radius: var(--r-control);
+  background: var(--c-brand);
+  color: #fff;
+  font-weight: 600;
+}
+
+@media (max-width: 1439px) {
+  .page {
+    --employee-w: 200px;
+    --cell-w-week: 88px;
+  }
+
+  .body {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+}
+
+/* панель шаблонов уезжает наверх */
+@media (max-width: 1199px) {
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .body > aside {
+    order: -1;
+    align-self: stretch;
+  }
+}
+
+@media (max-width: 1023px) {
+  .main {
+    padding: 16px 20px 24px;
+  }
+}
+
+@media (max-width: 1023px), (max-height: 699px) {
+  .main {
+    height: auto;
+  }
+
+  .body {
+    grid-template-rows: auto auto;
+  }
+
+  .card {
+    overflow: visible;
+  }
+
+  .card > [data-grid-scroller] {
+    max-height: 75vh;
+  }
+}
+
+@media (max-width: 639px) {
+  .main {
+    padding: 12px 12px 24px;
+    gap: 16px;
+  }
+
+  .card {
+    padding: 8px;
+    gap: 12px;
+    border-radius: 16px;
+  }
+
+  .withSelection {
+    padding-bottom: 8px;
+    margin-bottom: 120px;
+  }
+}
