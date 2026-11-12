@@ -10,6 +10,7 @@ export function ShiftChip({
   view,
   ghost = false,
   draft = false,
+  unpublished = false,
   title,
 }: {
   value: ShiftValue;
@@ -17,12 +18,13 @@ export function ShiftChip({
   view: ViewMode;
   ghost?: boolean;
   draft?: boolean;
+  unpublished?: boolean;
   title?: string;
 }) {
   const hours = formatHours(durationMinutes(value.startTime, value.endTime));
   return (
     <span
-      className={`${s.chip} ${s[tone]} ${view === 'month' ? s.month : s.week} ${ghost ? s.ghost : ''}`}
+      className={`${s.chip} ${s[tone]} ${view === 'month' ? s.month : s.week} ${ghost ? s.ghost : ''} ${unpublished ? s.unpublished : ''}`}
       title={title}
     >
       {view === 'week' ? (

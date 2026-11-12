@@ -252,6 +252,7 @@ export function ScheduleGrid() {
                   view={view}
                   selected={!!selected[k]}
                   isDraft={k in drafts}
+                  unpublished={k in drafts || !server[k]?.publishedAt}
                   dropTarget={overKey === k && !!dragItem}
                   dragSource={dragItem?.kind === 'shift' && dragItem.from === k}
                   focusable={k === activeKey}
@@ -319,7 +320,7 @@ const EmployeeCell = memo(function EmployeeCell({ employee, hours }: { employee:
   return (
     <div role="rowheader" className={s.employee}>
       {employee.avatarUrl ? (
-        <img className={s.avatar} src={employee.avatarUrl} alt="" width={40} height={40} loading="lazy" />
+        <img className={s.avatar} src={employee.avatarUrl} alt="" width={40} height={40} />
       ) : (
         <span className={`${s.avatar} ${s.initials}`} aria-hidden="true">
           {initials}
@@ -346,6 +347,7 @@ interface CellProps {
   view: ViewMode;
   selected: boolean;
   isDraft: boolean;
+  unpublished: boolean;
   dropTarget: boolean;
   dragSource: boolean;
   focusable: boolean;
@@ -364,6 +366,7 @@ const GridCell = memo(function GridCell({
   view,
   selected,
   isDraft,
+  unpublished,
   dropTarget,
   dragSource,
   focusable,
@@ -401,7 +404,8 @@ const GridCell = memo(function GridCell({
             tone={toneOf(value, templates)}
             view={view}
             draft={isDraft}
-            title={`${tpl ? tpl.name + ' · ' : 'Своя смена · '}${value.startTime} - ${value.endTime}\nдвойной клик - изменить, перетащить - перенести, с Ctrl - скопировать`}
+            unpublished={unpublished}
+            title={`${tpl ? tpl.name + ' · ' : 'Своя смена · '}${value.startTime} - ${value.endTime}${unpublished ? '\nне опубликована' : ''}\nдвойной клик - изменить, перетащить - перенести, с Ctrl - скопировать`}
           />
         </div>
       ) : selected ? (
