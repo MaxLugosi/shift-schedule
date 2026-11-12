@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-Фронт: http://localhost:5173, API: http://localhost:8787.
+После запуска открыть http://localhost:5173. Запросы к `/api` Vite проксирует на сервер.
 
 Если `DATABASE_URL` не задан, сервер поднимает встроенный PostgreSQL (PGlite) в `server/.data`, так что для локального запуска ничего ставить не надо. Миграции и тестовые данные (сотрудники и шаблоны из макета) накатываются при старте.
 
@@ -29,7 +29,7 @@ docker compose up -d db
 DATABASE_URL=postgres://shifts:shifts@localhost:5433/shifts
 ```
 
-Прод-сборка (API и фронт в одном процессе):
+Прод-сборка, где сервер сам отдаёт и API, и фронт (http://localhost:8787):
 
 ```bash
 npm run build
