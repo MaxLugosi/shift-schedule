@@ -6,7 +6,7 @@ import { toneOf } from './shiftStyle';
 import s from './DragLayer.module.css';
 
 export function DragLayer() {
-  const { item, x, y, copy } = useDnd();
+  const { item, x, y, copy, overKey } = useDnd();
   const templates = useSchedule((st) => st.templates);
   const view = useSchedule((st) => st.view);
   const server = useSchedule((st) => st.server);
@@ -31,10 +31,20 @@ export function DragLayer() {
   }
   if (!content) return null;
 
+  let hint = '';
+  const target = overKey ? effectiveShift({ server, drafts }, overKey) : null;
+  if (item.kind === 'shift' && overKey && overKey !== item.from) {
+    if (copy) hint = target ? 'заменить копией' : 'копировать';
+    else if (target) hint = 'поменять местами';
+  } else if (item.kind === 'template' && target) {
+    hint = 'заменить';
+  }
+
   return createPortal(
     <div className={s.layer} style={{ transform: `translate(${x}px, ${y}px)` }} aria-hidden="true">
       {content}
       {item.kind === 'shift' && copy && <span className={s.copy}>+</span>}
+      {hint && <span className={s.hint}>{hint}</span>}
     </div>,
     document.body,
   );

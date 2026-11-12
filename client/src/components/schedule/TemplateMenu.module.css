@@ -43,9 +43,32 @@
   transition: background-color 0.12s;
 }
 
-.option:hover,
+.option:hover:not(:disabled),
 .option:focus-visible {
   background: var(--c-field-hover);
+}
+
+.option:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 8px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--c-text);
+  cursor: pointer;
+}
+
+.check input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--c-brand);
 }
 
 .cornflower {

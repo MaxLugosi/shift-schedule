@@ -23,3 +23,16 @@
   font-size: 14px;
   line-height: 1;
 }
+.hint {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--c-dark);
+  color: #fff;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap;
+}

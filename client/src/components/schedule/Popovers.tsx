@@ -1,11 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import type { ShiftTemplate } from '../../api/types';
 import { longDayLabel } from '../../lib/dates';
 import { cellsWord, employeesWord } from '../../lib/plural';
 import { cellKey, effectiveShift, parseKey, useSchedule, type ShiftValue } from '../../store/schedule';
 import { useUi } from '../../store/ui';
 import { Popover } from '../ui/Popover';
-import { MenuAction, TemplateMenu } from './TemplateMenu';
+import { MenuAction, MenuCheckbox, TemplateMenu } from './TemplateMenu';
 import { TimeRangeForm } from './TimeRangeForm';
 import s from './Popovers.module.css';
 
@@ -36,33 +36,54 @@ export function Popovers() {
 
 const tplValue = (t: ShiftTemplate) => ({ startTime: t.startTime, endTime: t.endTime, templateId: t.id });
 
-// клик по дате: если в этом дне что-то выделено - ставим только туда, иначе всем
+// клик по дате: если в этом дне что-то выделено - ставим туда,
+// иначе всем, но по умолчанию только в свободные ячейки
 function QuickAssign({ date, onDone }: { date: string; onDone: () => void }) {
   const templates = useSchedule((st) => st.templates);
   const employees = useSchedule((st) => st.employees);
   const selected = useSchedule((st) => st.selected);
   const server = useSchedule((st) => st.server);
   const drafts = useSchedule((st) => st.drafts);
+  const [replace, setReplace] = useState(false);
 
   const selectedInDay = Object.keys(selected).filter((k) => parseKey(k).date === date);
-  const targets = selectedInDay.length ? selectedInDay : employees.map((e) => cellKey(e.id, date));
   const dayKeys = employees.map((e) => cellKey(e.id, date));
-  const dayHasShifts = dayKeys.some((k) => effectiveShift({ server, drafts }, k));
+  const busy = dayKeys.filter((k) => effectiveShift({ server, drafts }, k));
+  const free = dayKeys.filter((k) => !busy.includes(k));
+
+  let targets: string[];
+  let subtitle: string;
+  if (selectedInDay.length) {
+    targets = selectedInDay;
+    subtitle = `Назначить: ${cellsWord(selectedInDay.length)} этого дня`;
+  } else if (replace) {
+    targets = dayKeys;
+    subtitle = `Назначить всем: ${employeesWord(dayKeys.length)}`;
+  } else {
+    targets = free;
+    subtitle = free.length
+      ? `Назначить свободным: ${free.length} из ${dayKeys.length}`
+      : 'Все заняты. Отметьте замену, чтобы перезаписать';
+  }
 
   const st = useSchedule.getState;
   return (
     <TemplateMenu
       title={longDayLabel(date)}
-      subtitle={
-        selectedInDay.length
-          ? `Назначить: ${cellsWord(selectedInDay.length)} этого дня`
-          : `Назначить всем: ${employeesWord(targets.length)}`
-      }
+      subtitle={subtitle}
       templates={templates}
+      disabled={!targets.length}
       onPick={(t) => {
         st().assign(targets, tplValue(t));
         onDone();
       }}
+      options={
+        !selectedInDay.length && busy.length > 0 ? (
+          <MenuCheckbox id="quick-replace" checked={replace} onChange={setReplace}>
+            Заменить существующие смены ({busy.length})
+          </MenuCheckbox>
+        ) : undefined
+      }
       footer={
         <>
           <MenuAction
@@ -76,7 +97,7 @@ function QuickAssign({ date, onDone }: { date: string; onDone: () => void }) {
           </MenuAction>
           <MenuAction
             danger
-            disabled={!dayHasShifts}
+            disabled={!busy.length}
             onClick={() => {
               st().clear(selectedInDay.length ? selectedInDay : dayKeys);
               onDone();

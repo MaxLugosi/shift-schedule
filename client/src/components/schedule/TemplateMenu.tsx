@@ -8,12 +8,16 @@ export function TemplateMenu({
   subtitle,
   templates,
   onPick,
+  options,
+  disabled = false,
   footer,
 }: {
   title: string;
   subtitle?: string;
   templates: ShiftTemplate[];
   onPick: (t: ShiftTemplate) => void;
+  options?: ReactNode;
+  disabled?: boolean;
   footer?: ReactNode;
 }) {
   return (
@@ -22,10 +26,11 @@ export function TemplateMenu({
         <div className={s.title}>{title}</div>
         {subtitle && <div className={s.subtitle}>{subtitle}</div>}
       </div>
+      {options}
       <ul className={s.list} role="menu">
         {templates.map((t) => (
           <li key={t.id} role="none">
-            <button type="button" role="menuitem" className={`${s.option} ${s[t.color]}`} onClick={() => onPick(t)}>
+            <button type="button" role="menuitem" className={`${s.option} ${s[t.color]}`} onClick={() => onPick(t)} disabled={disabled}>
               <span className={s.name}>{t.name}</span>
               <span className={s.time}>
                 {t.startTime} - {t.endTime} · {formatHours(durationMinutes(t.startTime, t.endTime))}
@@ -55,5 +60,24 @@ export function MenuAction({
     <button type="button" className={`${s.action} ${danger ? s.danger : ''}`} onClick={onClick} disabled={disabled}>
       {children}
     </button>
+  );
+}
+
+export function MenuCheckbox({
+  id,
+  checked,
+  onChange,
+  children,
+}: {
+  id: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  children: ReactNode;
+}) {
+  return (
+    <label className={s.check} htmlFor={id}>
+      <input id={id} type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span>{children}</span>
+    </label>
   );
 }
